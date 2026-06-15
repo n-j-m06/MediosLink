@@ -1,76 +1,76 @@
-import uvicorn
+from pydantic import BaseModel, Field
+from typing import List
+
+class EmotionAnalysisSchema(BaseModel):
+    dominant_emotion: str = Field(
+        description="The primary mood of the text. Must be exactly one of: Joy, Sadness, Anger, Fear, Suspense, Calm, or Neutral."
+    )
+    valence: float = Field(
+        description="The positivity score of the narrative depth, ranging from -1.0 (deeply tragic/dark) to 1.0 (highly optimistic/celebratory)."
+    )
+    arousal: float = Field(
+        description="The physiological intensity or energy level of the text, ranging from 0.0 (calm, stagnant, whispered) to 1.0 (chaotic, fast-paced, high stakes, screaming)."
+    )
+    tempo_preference: str = Field(
+        description="The ideal speed for accompanying audio. Must be exactly one of: Ambient, Slow, Moderate, or Intense."
+    )
+    transition_detected: bool = Field(
+        description="True if the text experiences a sharp emotional pivot mid-paragraph (e.g., a peaceful scene interrupted by a sudden shock)."
+    )
+    linguistic_justification: str = Field(
+        description="A one-sentence breakdown of the subtext, sarcasm, or syntax structure that informed this emotional classification."
+    )
+    import os
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from transformers import pipeline
+import google.generativeai as genai
 
-# Initialize FastAPI application
-app = FastAPI(title="AI Writing Assistant: Mood Engine Backend")
+app = FastAPI()
 
-# Enable CORS so your frontend application can talk to it safely
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Adjust this in production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+# Configure the Gemini SDK
+# Make sure GEMINI_API_KEY is set in your environment variables
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+
+class TextPayload(BaseModel):
+    paragraph: str
+
+SYSTEM_PROMPT = (
+    "You are an advanced computational linguistics engine specialized in deep narrative "
+    "sentiment mapping. Your task is to analyze the subtext, structural cadence, punctuation, "
+    "and psychological tone of the provided paragraph. Look beyond literal words to extract "
+    "the underlying emotional state to match an audio track."
 )
 
-# Initialize the NLP pipeline globally so it loads once when the server boots
-print("Initializing Hugging Face Emotion Model...")
-# A robust, standard dataset model for multi-emotion detection
-emotion_classifier = pipeline(
-    "text-classification", 
-    model="SamLowe/roberta-base-go_emotions", 
-    top_k=None
-)
-print("Model ready!")
-
-# Define the structure of incoming requests from the text editor
-class ParagraphRequest(BaseModel):
-    text: str
-
-# Define a baseline threshold for shifting states
-CONFIDENCE_THRESHOLD = 0.20
-
-@app.post("/api/analyze-mood")
-async def analyze_mood(payload: ParagraphRequest):
-    """
-    Receives text, runs emotion classification, maps scores, 
-    and returns instructions to the frontend.
-    """
-    if not payload.text.strip():
-        return {"status": "empty", "mood": "neutral", "scores": {}}
-
+@app.post("/analyze-mood-premium")
+async def analyze_mood_premium(payload: TextPayload):
+    if not payload.paragraph.strip():
+        raise HTTPException(status_code=400, detail="Paragraph text cannot be empty.")
+        
     try:
-        # Run emotion classification asynchronously in a real app context
-        # payload.text corresponds to a paragraph sent on an Enter keypress or a debounce timeout
-        raw_predictions = emotion_classifier(payload.text)[0]
+        # Initialize the model (using gemini-1.5-pro or gemini-2.5-pro for deep reasoning capacity)
+        model = genai.GenerativeModel(
+            model_name="gemini-1.5-pro",
+            system_instruction=SYSTEM_PROMPT
+        )
         
-        # Convert predictions to a cleaner key-value dictionary
-        # Example output format: {"joy": 0.85, "sadness": 0.02, ...}
-        scores_dict = {item['label']: round(item['score'], 4) for item in raw_predictions}
+        # Enforce high-accuracy structured JSON out of the box
+        response = model.generate_content(
+            payload.paragraph,
+            generation_config={
+                "response_mime_type": "application/json",
+                "response_schema": EmotionAnalysisSchema,
+                "temperature": 0.1,  # Low temperature guarantees deterministic, analytical consistency
+            }
+        )
         
-        # Determine the top detected emotion label
-        top_prediction = max(raw_predictions, key=lambda x: x['score'])
-        detected_mood = top_prediction['label']
-        confidence = top_prediction['score']
+        # The response text is a guaranteed valid JSON string matching our Pydantic model
+        import json
+        structured_data = json.loads(response.text)
         
-        # fallback rule: if confidence is incredibly low, maintain neutral track
-        if confidence < CONFIDENCE_THRESHOLD:
-            detected_mood = "neutral"
-
-        # Construct payload instructions for the frontend audio layer
         return {
             "status": "success",
-            "primary_mood": detected_mood,
-            "confidence": confidence,
-            "all_scores": scores_dict
+            "data": structured_data
         }
-
+        
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
-
-if __name__ == "__main__":
-    # Start server locally on port 8000
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+        raise HTTPException(status_code=500, detail=f"Engine analysis failure: {str(e)}")
