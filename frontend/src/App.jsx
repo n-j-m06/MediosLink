@@ -398,6 +398,57 @@ shadow-[0_0_40px_rgba(255,255,255,0.05)]
                       .linguistic_justification
                   }
                 </p>
+                <div
+  className="
+  mt-8
+  bg-white/5
+  border
+  border-white/10
+  rounded-3xl
+  p-6
+  "
+>
+  <h3
+    className="
+    text-xl
+    font-bold
+    mb-4
+    "
+  >
+    🎬 Director's Note
+  </h3>
+
+  <p
+    className="
+    text-slate-300
+    leading-relaxed
+    "
+  >
+    This narrative exhibits a
+    <span className="font-semibold text-white">
+      {" "}
+      {result.data.dominant_emotion}
+    </span>
+    {" "}emotional profile with
+    {" "}
+    <span className="font-semibold text-white">
+      {result.data.bgm_style}
+    </span>
+    {" "}musical characteristics.
+
+    A soundtrack featuring
+    {" "}
+    <span className="font-semibold text-white">
+      {result.data.instrument}
+    </span>
+    {" "}at approximately
+    {" "}
+    <span className="font-semibold text-white">
+      {result.data.tempo_bpm} BPM
+    </span>
+    {" "}is recommended to enhance the emotional impact and cinematic storytelling experience.
+  </p>
+</div>
               </div>
               <div
   className="
