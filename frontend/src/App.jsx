@@ -1,8 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Music4 } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import IntroScreen from "./components/IntroScreen";
+import cinemaVideo from "./assets/cinema-bg.mp4";
 
 function App() {
   const [script, setScript] = useState("");
@@ -39,16 +40,16 @@ function App() {
     }
   };
 
-  const emotionColors = {
-    Joy: "from-yellow-400 to-orange-500",
-    Romantic: "from-pink-500 to-purple-600",
-    Sadness: "from-blue-500 to-cyan-600",
-    Fear: "from-slate-700 to-black",
-    Suspense: "from-red-500 to-rose-700",
-    Calm: "from-cyan-400 to-blue-500",
-    Anger: "from-red-600 to-orange-600",
-    Neutral: "from-slate-600 to-slate-800",
-  };
+  const emotionIcons = {
+  Joy: "✨",
+  Romantic: "❤️",
+  Sadness: "💙",
+  Fear: "😨",
+  Suspense: "🎭",
+  Calm: "🌊",
+  Anger: "🔥",
+  Neutral: "🎵",
+};
   if (!started) {
   return (
     <IntroScreen
@@ -57,109 +58,207 @@ function App() {
   );
 }
   return (
-    <div className="min-h-screen bg-slate-950 relative overflow-hidden">
+   <div className="min-h-screen relative overflow-hidden">
+    {/* Video Background */}
+
+<video
+  autoPlay
+  loop
+  muted
+  playsInline
+  className="
+    absolute
+    inset-0
+    w-full
+    h-full
+    object-cover
+  "
+>
+  <source
+    src={cinemaVideo}
+    type="video/mp4"
+  />
+</video>
+
+{/* Dark Overlay */}
+
+<div className="absolute inset-0 bg-black/55" />
 
       {/* Background Blobs */}
-      <div className="absolute top-20 left-20 w-72 h-72 bg-purple-600/20 rounded-full blur-3xl"></div>
 
-      <div className="absolute bottom-20 right-20 w-72 h-72 bg-cyan-600/20 rounded-full blur-3xl"></div>
-
-      <div className="relative z-10 max-w-6xl mx-auto px-6 py-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-8 pt-12">
 
         {/* HERO */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-6"
         >
-          <div className="flex justify-center mb-4">
-            <Music4
-              size={50}
-              className="text-cyan-400"
-            />
-          </div>
 
-          <h1 className="text-7xl font-extrabold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+        <h1
+  className="
+  text-8xl
+  font-black
+  tracking-tight
+  text-white
+  drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]
+  "
+>
             MediosLink
           </h1>
 
-          <p className="text-slate-400 mt-4 text-xl">
+         <p
+  className="
+  text-slate-300
+  mt-3
+  text-lg
+  tracking-[0.3em]
+  uppercase
+  "
+>
             Every Story Has A Soundtrack
           </p>
         </motion.div>
+      <div
+  className="
+  flex
+  items-center
+  justify-center
+  gap-8
+  mt-4
+  "
+>
 
+  <div
+    className="
+    w-16
+    h-[2px]
+    bg-cyan-400
+    rounded-2xl
+    "
+  />
+
+  <div
+    className="
+    w-16
+    h-[2px]
+    bg-purple-500
+    rounded-full
+    "
+  />
+
+</div>
         {/* INPUT CARD */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="
-          bg-white/5
-          backdrop-blur-xl
-          border border-white/10
-          rounded-3xl
-          p-8
-          shadow-2xl
-          "
-        >
-          <textarea
-            value={script}
-            onChange={(e) =>
-              setScript(e.target.value)
-            }
-            placeholder="Write your narrative..."
-            className="
-            w-full
-            h-72
-            bg-slate-900/60
-            border border-slate-700
-            rounded-2xl
-            p-6
-            text-white
-            resize-none
-            outline-none
-            text-lg
-            "
-          />
+{/* STORY STUDIO */}
 
-          <div className="flex justify-between mt-4 text-slate-400 text-sm">
-            <span>
-              Words:{" "}
-              {
-                script
-                  .trim()
-                  .split(/\s+/)
-                  .filter(Boolean).length
-              }
-            </span>
+<motion.div
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  className="max-w-6xl mx-auto"
+>
 
-            <span>
-              Characters: {script.length}
-            </span>
-          </div>
+  <div
+  className="
+  bg-black/25
+  backdrop-blur-xl
+    border border-white/10
+    rounded-[32px]
+    overflow-hidden
+    shadow-[0_0_50px_rgba(0,0,0,0.4)]
+    "
+  >
 
-          <button
-            onClick={analyzeMood}
-            disabled={loading}
-            className="
-            mt-8
-            px-10
-            py-4
-            rounded-2xl
-            font-bold
-            text-white
-            bg-gradient-to-r
-            from-violet-600
-            to-fuchsia-600
-            hover:scale-105
-            transition-all
-            duration-300
-            "
-          >
-            {loading
-              ? "🎭 Analyzing Story..."
-              : "Analyze Mood"}
-          </button>
-        </motion.div>
+    {/* Header */}
+
+    
+
+     
+
+    {/* Text Area */}
+
+    <textarea
+      value={script}
+      onChange={(e) =>
+        setScript(e.target.value)
+      }
+      placeholder="Begin your story..."
+      className="
+      w-full
+      h-[300px]
+      bg-transparent
+      p-8
+      placeholder:text-slate-500
+      font-mono
+      text-white
+      text-xl
+      leading-relaxed
+      resize-none
+      outline-none
+      "
+    />
+
+    {/* Footer */}
+
+    <div
+      className="
+      flex
+      justify-between
+      items-center
+      px-8
+      py-5
+      border-t
+      border-white/10
+      "
+    >
+
+      <div className="flex gap-8 text-slate-400">
+
+        <span>
+          Words:
+          {
+            script
+              .trim()
+              .split(/\s+/)
+              .filter(Boolean).length
+          }
+        </span>
+
+        <span>
+          Characters:
+          {script.length}
+        </span>
+
+      </div>
+
+      <button
+        onClick={analyzeMood}
+        disabled={loading}
+        className="
+group
+px-8
+py-4
+rounded-2xl
+bg-black/40
+border
+border-white/20
+backdrop-blur-xl
+text-white
+font-semibold
+hover:scale-105
+transition-all
+duration-300
+"
+      >
+        {loading
+          ? "🎭 Reading Story..."
+          : "✨ Generate Soundtrack"}
+      </button>
+
+    </div>
+
+  </div>
+
+</motion.div>
 
         {/* RESULTS */}
         <AnimatePresence>
@@ -176,32 +275,65 @@ function App() {
               exit={{
                 opacity: 0,
               }}
-              className={`
-              mt-10
-              rounded-3xl
-              p-8
-              text-white
-              bg-gradient-to-r
-              ${
-                emotionColors[
-                  result.data
-                    .dominant_emotion
-                ] ||
-                emotionColors.Neutral
-              }
-              `}
+             className="
+mt-12
+max-w-5xl
+mx-auto
+bg-black/30
+backdrop-blur-xl
+border
+border-white/10
+rounded-[32px]
+p-10
+text-white
+shadow-[0_0_40px_rgba(255,255,255,0.05)]
+"
             >
-              <div className="flex items-center gap-3 mb-6">
-                <Sparkles />
-                <h2 className="text-5xl font-bold">
-                  {
-                    result.data
-                      .dominant_emotion
-                  }
-                </h2>
-              </div>
+              <div className="text-center">
 
-              <div className="grid md:grid-cols-2 gap-4">
+  <div className="text-7xl mb-4">
+    {
+      emotionIcons[
+        result.data
+          .dominant_emotion
+      ]
+    }
+  </div>
+
+  <h2
+    className="
+    text-7xl
+    font-black
+    tracking-tight
+    "
+  >
+    {
+      result.data
+        .dominant_emotion
+    }
+  </h2>
+
+  <p
+    className="
+    text-slate-400
+    mt-3
+    uppercase
+    tracking-[0.3em]
+    "
+  >
+    Emotion Detected
+  </p>
+
+</div>
+
+ <div
+  className="
+  grid
+  md:grid-cols-2
+  gap-6
+  mt-12
+  "
+>
 
                 <MetricCard
                   title="Valence"
@@ -224,20 +356,27 @@ function App() {
                       .tempo_preference
                   }
                 />
-
                 <MetricCard
-                  title="Transition"
-                  value={
-                    result.data
-                      .transition_detected
-                      ? "Yes"
-                      : "No"
-                  }
-                />
+  title="Transition"
+  value={
+    result.data
+      .transition_detected
+      ? "Yes"
+      : "No"
+  }
+/>
+                
 
               </div>
 
-              <div className="mt-8 bg-black/20 rounded-2xl p-5">
+              <div
+  className="
+  mt-10
+  border-t
+  border-white/10
+  pt-8
+  "
+>
                 <h3 className="font-bold text-xl mb-3">
                   🧠 AI Narrative Insight
                 </h3>
@@ -262,12 +401,36 @@ function MetricCard({
   value,
 }) {
   return (
-    <div className="bg-white/10 rounded-2xl p-5 backdrop-blur-lg">
-      <h3 className="text-sm opacity-70">
+    <div
+      className="
+      bg-white/5
+      border
+      border-white/10
+      rounded-3xl
+      p-6
+      backdrop-blur-xl
+      text-center
+      "
+    >
+      <h3
+        className="
+        text-slate-400
+        uppercase
+        tracking-widest
+        text-sm
+        "
+      >
         {title}
       </h3>
 
-      <p className="text-3xl font-bold mt-2">
+      <p
+        className="
+        text-4xl
+        font-bold
+        text-white
+        mt-4
+        "
+      >
         {value}
       </p>
     </div>
