@@ -1,18 +1,119 @@
-# React + Vite
+# 🎨 MediosLink Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+The MediosLink Frontend delivers a cinematic and interactive storytelling experience where users can transform textual narratives into immersive soundtrack recommendations.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The interface is designed around the concept of a digital movie studio, allowing users to submit stories, analyze emotional content, and preview AI-selected cinematic soundtracks.
 
-## React Compiler
+---
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## Features
 
-Note: This will impact Vite dev & build performances.
+### 🎬 Cinematic Intro Experience
 
-## Expanding the ESLint configuration
+* Animated clapboard entry screen
+* Background soundtrack
+* Smooth transitions
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 🎥 Immersive Visual Design
+
+* Full-screen video background
+* Glassmorphism interface
+* Dynamic motion effects
+
+### ✍️ Story Workspace
+
+Users can:
+
+* Write stories
+* Paste scripts
+* Analyze narrative content
+
+in real time.
+
+### 🧠 AI Narrative Analysis
+
+Displays:
+
+* Dominant Emotion
+* Valence
+* Arousal
+* Tempo
+* Narrative Transition Detection
+
+### 🎵 Soundtrack Recommendation
+
+Provides:
+
+* Recommended BGM
+* Style Classification
+* Instrument Suggestions
+* BPM Estimation
+
+### 🎧 Audio Playback
+
+Integrated audio player for instant soundtrack preview.
+
+### 🎬 Director's Note
+
+Provides cinematic reasoning behind soundtrack recommendations.
+
+---
+
+## User Flow
+
+```text
+Enter Studio
+      │
+      ▼
+Write Narrative
+      │
+      ▼
+Analyze Story
+      │
+      ▼
+Emotion Detection
+      │
+      ▼
+Soundtrack Recommendation
+      │
+      ▼
+Audio Playback
+      │
+      ▼
+Director's Note
+```
+
+---
+
+## Technology Stack
+
+* React
+* Vite
+* Tailwind CSS v4
+* Framer Motion
+* Axios
+* Lucide React
+
+---
+
+## Running Frontend
+
+```bash
+npm install
+
+npm run dev
+```
+
+Application URL:
+
+```text
+http://localhost:5173
+```
+
+Backend URL:
+
+```text
+http://127.0.0.1:8000
+```
