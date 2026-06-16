@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from transformers import pipeline
 from fastapi.staticfiles import StaticFiles
 import re
+import random
 app = FastAPI()
 app.mount(
     "/bgm",
@@ -165,11 +166,9 @@ def nrc_emotion_score(text):
 
     return scores
 
-def hybrid_emotion_detection(
-    text,
-    model_emotion
-):
-    words = set(text.lower().split())
+
+def hybrid_emotion_detection(text, model_emotion):
+
     scores = nrc_emotion_score(text)
 
     dominant_nrc = max(
@@ -185,6 +184,13 @@ def hybrid_emotion_detection(
         "anticipation": "Suspense"
     }
 
+    words = set(
+        re.findall(
+            r"\b[a-zA-Z]+\b",
+            text.lower()
+        )
+    )
+
     romantic_words = {
         "love","lover","romance","romantic",
         "kiss","hug","cuddle","marriage",
@@ -192,30 +198,38 @@ def hybrid_emotion_detection(
         "wife","husband","soulmate",
         "sweetheart","darling"
     }
+
     fear_words = {
-        "fear",
-        "afraid",
-        "terror",
-        "threat",
-        "threatened",
-        "danger",
-        "dangerous",
-        "dead",
-        "death",
-        "murder",
-        "killer",
-        "horror",
-        "panic",
-        "scared",
-        "attack",
-        "kidnap",
-        "blood"
+        "fear","afraid","terror","threat",
+        "danger","dead","death","murder",
+        "killer","horror","panic","scared",
+        "attack","kidnap","blood"
     }
 
-    if len(words & fear_words) >= 1:
+    calm_words = {
+        "peace","peaceful","calm","serene",
+        "tranquil","ocean","lake","forest",
+        "nature","sunset","sunrise",
+        "breeze","relax","meditation"
+    }
+
+    if words & romantic_words:
+        return "Romantic"
+
+    if words & fear_words:
         return "Fear"
 
-    return model_emotion 
+    if len(words & calm_words) >= 2:
+        return "Calm"
+
+    if scores[dominant_nrc] > 1.2:
+        return nrc_mapping.get(
+            dominant_nrc,
+            model_emotion
+        )
+
+    return model_emotion
+
 
     calm_words = {
         "peace","peaceful","calm","serene",
@@ -335,42 +349,96 @@ def get_instrument(emotion):
 def get_bpm(arousal):
 
     return int(60 + (arousal * 100))
+
 def recommend_bgm(emotion, intensity):
 
-    bgm_map = {
+    bgm_library = {
 
-        ("Joy", "Soft"):
-            "happy_morning.mp3",
+        "Joy": {
+            "Soft": ["Joy/uplifting_theme.mp3"],
+            "Medium": ["Joy/celebration_theme.mp3"],
+            "Intense": ["Joy/victory_theme.mp3"]
+        },
 
-        ("Joy", "Medium"):
-            "uplifting_theme.mp3",
+        "Romantic": {
+            "Soft": ["romantic/gentle_strings.mp3"],
+            "Medium": ["romantic/romantic_piano.mp3"],
+            "Intense": ["romantic/love_theme.mp3"]
+        },
 
-        ("Joy", "Intense"):
-            "victory_theme.mp3",
+        "Sadness": {
+            "Soft": [
+                "sadness/emotional_piano.mp3",
+                "sadness/lonely_night.mp3"
+            ],
+            "Medium": [
+                "sadness/sad_strings.mp3"
+            ],
+            "Intense": [
+                "sadness/heartbreak_theme.mp3"
+            ]
+        },
 
-        ("Sadness", "Soft"):
-            "emotional_piano.mp3",
+        "Fear": {
+            "Soft": [
+                "fear/suspense_build.mp3"
+            ],
+            "Medium": [
+                "fear/danger_theme.mp3"
+            ],
+            "Intense": [
+                "fear/dark_horror.mp3",
+                "fear/thriller_chase.mp3"
+            ]
+        },
 
-        ("Sadness", "Medium"):
-            "heartbreak_theme.mp3",
+        "Suspense": {
+            "Soft": [
+                "surprise/discovery.mp3"
+            ],
+            "Medium": [
+                "surprise/mystery_theme.mp3",
+                "surprise/wonder_theme.mp3"
+            ],
+            "Intense": [
+                "surprise/reveal_theme.mp3"
+            ]
+        },
 
-        ("Fear", "Intense"):
-            "dark_horror.mp3",
+        "Calm": {
+            "Soft": [
+                "calm/ambient_forest.mp3"
+            ],
+            "Medium": [
+                "calm/peaceful_river.mp3"
+            ],
+            "Intense": [
+                "calm/meditation_theme.mp3"
+            ]
+        },
 
-        ("Suspense", "Intense"):
-            "thriller_chase.mp3",
-
-        ("Romantic", "Medium"):
-            "love_theme.mp3",
-
-        ("Calm", "Soft"):
-            "ambient_forest.mp3"
+        "Anger": {
+            "Soft": [
+                "action/battle_drums.mp3"
+            ],
+            "Medium": [
+                "action/intense_action.mp3"
+            ],
+            "Intense": [
+                "action/rage_theme.mp3"
+            ]
+        }
     }
 
-    return bgm_map.get(
-        (emotion, intensity),
-        "default_bgm.mp3"
-    )
+    try:
+        return random.choice(
+            bgm_library[emotion][intensity]
+        )
+    except:
+        return "default/default.mp3"
+
+
+
 @app.post("/analyze-mood-premium")
 async def analyze_mood_premium(payload: TextPayload):
 

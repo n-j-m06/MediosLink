@@ -329,7 +329,7 @@ shadow-[0_0_40px_rgba(255,255,255,0.05)]
  <div
   className="
   grid
-  md:grid-cols-2
+  md:grid-cols-3
   gap-6
   mt-12
   "
@@ -365,7 +365,18 @@ shadow-[0_0_40px_rgba(255,255,255,0.05)]
       : "No"
   }
 />
-                
+         <MetricCard
+  title="BGM Style"
+  value={
+    result.data.bgm_style
+  }
+/>
+<MetricCard
+  title="Instrument"
+  value={
+    result.data.instrument
+  }
+/>       
 
               </div>
 
@@ -388,8 +399,64 @@ shadow-[0_0_40px_rgba(255,255,255,0.05)]
                   }
                 </p>
               </div>
+              <div
+  className="
+  mt-8
+  border-t
+  border-white/10
+  pt-8
+  "
+>
+
+  <h3
+    className="
+    font-bold
+    text-xl
+    mb-4
+    "
+  >
+    🎵 Recommended Soundtrack
+  </h3>
+
+  <div
+    className="
+    bg-white/5
+    border
+    border-white/10
+    rounded-3xl
+    p-6
+    "
+  >
+
+    <p className="text-xl font-semibold">
+      {result.data.bgm_style}
+    </p>
+
+    <p className="text-slate-400 mt-2">
+      {result.data.instrument}
+    </p>
+
+    <p className="text-slate-400">
+      {result.data.tempo_bpm} BPM
+    </p>
+
+    <audio
+      controls
+      className="w-full mt-4"
+      src={
+        result.data
+          .recommended_bgm
+      }
+    />
+
+  </div>
+
+</div>
             </motion.div>
+            
           )}
+          
+  
         </AnimatePresence>
       </div>
     </div>
