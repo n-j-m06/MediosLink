@@ -512,7 +512,7 @@ async def analyze_mood_premium(payload: TextPayload):
             "instrument": get_instrument(dominant_emotion),
             "tempo_bpm": get_bpm(arousal),
             "recommended_bgm":
-                f"http://127.0.0.1:8000/bgm/{recommend_bgm(dominant_emotion, bgm_intensity)}"
+                    f"/bgm/{recommend_bgm(dominant_emotion, bgm_intensity)}"
         }
 
         return {
